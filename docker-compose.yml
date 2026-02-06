@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: kitchen-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: kitchen-server
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongodb:27017/kitchen-orders
+      - CLIENT_URL=http://localhost:5173
+      - KITCHEN_PIN=1234
+      - APP_BASE_URL=http://localhost:5173
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:

@@ -1,0 +1,18 @@
+import { useEffect } from 'react';
+import { Socket } from 'socket.io-client';
+
+export function useSocketEvent<T>(
+  socket: Socket | null,
+  event: string,
+  handler: (data: T) => void
+) {
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(event, handler as (...args: unknown[]) => void);
+
+    return () => {
+      socket.off(event, handler as (...args: unknown[]) => void);
+    };
+  }, [socket, event, handler]);
+}
